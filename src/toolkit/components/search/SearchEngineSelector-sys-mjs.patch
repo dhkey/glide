@@ -1,8 +1,8 @@
 diff --git a/toolkit/components/search/SearchEngineSelector.sys.mjs b/toolkit/components/search/SearchEngineSelector.sys.mjs
-index 3a42b383af1984fa3a818a040618a21f1b8f1d5c..f3dbbe51c2d16505e3f63d4720e97c6953a0b8af 100644
+index 8c2a5b482601ac4dfa21c0a35bab82bf9fec469d..20c09a954bfdff5e5dd8b2a283730e8b4d8542d7 100644
 --- a/toolkit/components/search/SearchEngineSelector.sys.mjs
 +++ b/toolkit/components/search/SearchEngineSelector.sys.mjs
-@@ -31,6 +31,16 @@ const lazy = XPCOMUtils.declareLazy({
+@@ -38,6 +38,16 @@ const lazy = XPCOMUtils.declareLazy({
      }),
  });
  
@@ -19,7 +19,7 @@ index 3a42b383af1984fa3a818a040618a21f1b8f1d5c..f3dbbe51c2d16505e3f63d4720e97c69
  /**
   * SearchEngineSelector parses the JSON configuration for
   * search engines and returns the applicable engines depending
-@@ -348,7 +358,7 @@ export class SearchEngineSelector {
+@@ -378,7 +388,7 @@ export class SearchEngineSelector {
        // Now call this again.
        return this.#getConfiguration(false);
      }
@@ -28,12 +28,12 @@ index 3a42b383af1984fa3a818a040618a21f1b8f1d5c..f3dbbe51c2d16505e3f63d4720e97c69
    }
  
    /**
-@@ -366,7 +376,7 @@ export class SearchEngineSelector {
+@@ -396,7 +406,7 @@ export class SearchEngineSelector {
     *   The new configuration object
     */
    _onConfigurationUpdated({ data: { current } }) {
 -    this.#configuration = current;
 +    this.#configuration = glideFilterConfiguration(current);
  
-     this.#selector.setSearchConfig(
-       JSON.stringify({ data: this.#configuration })
+     if (lazy.SearchUtils.configV3FeatureGate) {
+       this.#selector.setSearchConfigV3(
