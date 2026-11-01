@@ -38,10 +38,6 @@ export const content = {
         continue;
       }
 
-      if (is_covered(document, target, dom_rect)) {
-        continue;
-      }
-
       const rect = target.documentGlobal!.windowUtils.getElementBoundingScreenRect(target);
 
       // check if the element would be outside the current browser window
@@ -59,6 +55,10 @@ export const content = {
 
       if (x > opts.browser_ui_rect.width) {
         // to the right of the viewport
+        continue;
+      }
+
+      if (is_covered(document, target, dom_rect)) {
         continue;
       }
 
