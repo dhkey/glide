@@ -1,15 +1,39 @@
 diff --git a/toolkit/components/search/SearchEngineSelector.sys.mjs b/toolkit/components/search/SearchEngineSelector.sys.mjs
-index 85c9d83282a62f4e23c6a0a65e7ccd8c29872ea0..bb24432b1677cc065e93c2f1e8044f8a3f17bdf6 100644
+index 3a42b383af1984fa3a818a040618a21f1b8f1d5c..f3dbbe51c2d16505e3f63d4720e97c6953a0b8af 100644
 --- a/toolkit/components/search/SearchEngineSelector.sys.mjs
 +++ b/toolkit/components/search/SearchEngineSelector.sys.mjs
-@@ -43,6 +43,10 @@ export class SearchEngineSelector {
-    */
-   constructor(listener) {
-     this.#remoteConfig = lazy.RemoteSettings(lazy.SearchUtils.SETTINGS_KEY);
-+    // we have patched the `services/settings/dumps/main/search-config-v2.json` file which means it
-+    // won't match the signature from the mozilla services endpoint anymore, so just disable it.
-+    this.#remoteConfig.verifySignature = false;
+@@ -31,6 +31,16 @@ const lazy = XPCOMUtils.declareLazy({
+     }),
+ });
+ 
++const GLIDE_REMOVED_ENGINES = new Set(["perplexity"]);
 +
-     this.#remoteConfigOverrides = lazy.RemoteSettings(
-       lazy.SearchUtils.SETTINGS_OVERRIDES_KEY
-     );
++/**
++ * @param {object[]} records
++ * @returns {object[]}
++ */
++function glideFilterConfiguration(records) {
++  return records.filter(record => !GLIDE_REMOVED_ENGINES.has(record.identifier));
++}
++
+ /**
+  * SearchEngineSelector parses the JSON configuration for
+  * search engines and returns the applicable engines depending
+@@ -348,7 +358,7 @@ export class SearchEngineSelector {
+       // Now call this again.
+       return this.#getConfiguration(false);
+     }
+-    return result;
++    return glideFilterConfiguration(result);
+   }
+ 
+   /**
+@@ -366,7 +376,7 @@ export class SearchEngineSelector {
+    *   The new configuration object
+    */
+   _onConfigurationUpdated({ data: { current } }) {
+-    this.#configuration = current;
++    this.#configuration = glideFilterConfiguration(current);
+ 
+     this.#selector.setSearchConfig(
+       JSON.stringify({ data: this.#configuration })

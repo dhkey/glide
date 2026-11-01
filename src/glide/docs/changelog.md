@@ -24,6 +24,7 @@ padding: 0.3em;
 ## Changes {% id="0.1.66a-changes" %}
 
 - Bumped Firefox from 159.0b4 to 159.0b5
+- Fixed Perplexity still being listed as a built-in search engine
 
 # 0.1.65a
 
